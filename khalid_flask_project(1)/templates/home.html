@@ -5,22 +5,142 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>الصفحة الرئيسية</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    /* تحسين المظهر العام لو الصفحة */
+    body {
+      background: linear-gradient(135deg, #141e30, #243b55);
+      color: #fff;
+      font-family: 'Cairo', sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 60px auto;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 40px;
+      border-radius: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      color: #ffd700;
+      font-size: 28px;
+    }
+
+    a {
+      color: #ffd700;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* قسم المتصلين الآن */
+    .online-users {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 25px;
+      margin-top: 40px;
+    }
+
+    .user-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 20px;
+      border-radius: 20px;
+      width: 140px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .user-card img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 3px solid #ffd700;
+      object-fit: cover;
+      margin-bottom: 10px;
+      transition: transform 0.3s ease;
+    }
+
+    .user-card:hover img {
+      transform: scale(1.1);
+    }
+
+    .user-card p {
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .user-card::after {
+      content: "";
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 14px;
+      height: 14px;
+      background: #00ff55;
+      border-radius: 50%;
+      border: 2px solid #000;
+      box-shadow: 0 0 10px #00ff55;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>مرحبًا يا {{ username }} 👋</h1>
     <p>أنت الآن مسجل دخولك في الموقع.</p>
-    <p><a href="{{ url_for('profile') }}" style="color:#ffd700;">الذهاب إلى الصفحة الشخصية</a></p>
-    <p><a href="{{ url_for('logout') }}" style="color:#ffd700;">تسجيل الخروج</a></p>
+    <p><a href="{{ url_for('profile') }}">الذهاب إلى الصفحة الشخصية</a></p>
+    <p><a href="{{ url_for('logout') }}">تسجيل الخروج</a></p>
+
     <h2>المستخدمون النشطون الآن</h2>
-    <div id="online-list"></div>
+    <div id="online-list" class="online-users">
+      <p>جارٍ التحميل...</p>
+    </div>
   </div>
+
   <script>
-    async function fetchOnline(){
-      const r = await fetch("/api/online");
-      const data = await r.json();
-      document.getElementById("online-list").innerText = data.join(", ");
+    async function fetchOnline() {
+      try {
+        const response = await fetch("/api/online");
+        const data = await response.json();
+
+        const list = document.getElementById("online-list");
+        list.innerHTML = "";
+
+        data.forEach(user => {
+          const card = document.createElement("div");
+          card.className = "user-card";
+
+          const img = document.createElement("img");
+          img.src = user.image || "{{ url_for('static', filename='default.png') }}";
+          img.alt = user.name;
+
+          const name = document.createElement("p");
+          name.textContent = user.name;
+
+          card.appendChild(img);
+          card.appendChild(name);
+          list.appendChild(card);
+        });
+
+      } catch (e) {
+        console.error("خطأ في جلب المستخدمين:", e);
+      }
     }
+
     fetchOnline();
     setInterval(fetchOnline, 5000);
   </script>
