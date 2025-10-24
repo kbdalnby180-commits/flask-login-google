@@ -83,7 +83,7 @@ def home():
     username = session['username']
     users = load_users()
     profile = users.get(username, {}).get('avatar') or url_for('static', filename='default.png')
-    return render_template('home.html', username=username)
+    return render_template('home.html', username=username, profile_url=profile)
 
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -121,7 +121,7 @@ def logout():
     return redirect(url_for('login'))
 
 # Google OAuth start
-@app.route('/auth/google', methods=['POST'])
+@app.route('/auth/google')
 def google_login():
     redirect_uri = url_for('google_authorize', _external=True)
     return oauth.google.authorize_redirect(redirect_uri)
@@ -130,13 +130,11 @@ def google_login():
 def google_authorize():
     token = oauth.google.authorize_access_token()
     userinfo = oauth.google.parse_id_token(token)
-    # userinfo contains 'email', 'name', 'picture', 'sub'
     email = userinfo.get('email')
     name = userinfo.get('name') or email.split('@')[0]
     picture = userinfo.get('picture')
 
     users = load_users()
-    # create unique username based on name
     base_name = ''.join(ch for ch in name if ch.isalnum())
     if not base_name:
         base_name = email.split('@')[0]
@@ -145,14 +143,13 @@ def google_authorize():
     while uname in users:
         uname = f"{base_name}{i}"
         i += 1
-    # generate random password (stored hashed) — user can reset later
     random_pwd = secrets.token_urlsafe(12)
     users[uname] = {
         'email': email,
         'password_hash': generate_password_hash(random_pwd),
         'avatar': None
     }
-    # download picture if exists
+
     if picture:
         try:
             resp = requests.get(picture, timeout=5)
@@ -167,7 +164,6 @@ def google_authorize():
             print('Could not download picture:', e)
 
     save_users(users)
-    # log the user in
     session['username'] = uname
     mark_online(uname)
     return redirect(url_for('profile'))
@@ -191,7 +187,6 @@ def upload_avatar():
     f = request.files['avatar']
     if f.filename == '':
         return redirect(url_for('profile'))
-    # save file
     ext = f.filename.rsplit('.', 1)[-1].lower()
     username = session['username']
     filename = f"{username}.{ext}"
