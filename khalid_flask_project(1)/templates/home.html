@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>الصفحة الرئيسية</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>مرحبًا يا {{ username }} 👋</h1>
+    <p>أنت الآن مسجل دخولك في الموقع.</p>
+    <p><a href="{{ url_for('profile') }}" style="color:#ffd700;">الذهاب إلى الصفحة الشخصية</a></p>
+    <p><a href="{{ url_for('logout') }}" style="color:#ffd700;">تسجيل الخروج</a></p>
+    <h2>المستخدمون النشطون الآن</h2>
+    <div id="online-list"></div>
+  </div>
+  <script>
+    async function fetchOnline(){
+      const r = await fetch("/api/online");
+      const data = await r.json();
+      document.getElementById("online-list").innerText = data.join(", ");
+    }
+    fetchOnline();
+    setInterval(fetchOnline, 5000);
+  </script>
+</body>
+</html>

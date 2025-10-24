@@ -1,0 +1,129 @@
+/* Main style — taken from your CSS */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    background: rgba(0,0,0,0.65);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ffd700;
+}
+
+.profile {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    align-items: center;
+}
+
+.profile img {
+    width: 220px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #ffd700;
+}
+
+.info {
+    flex: 1;
+}
+
+.info p {
+    margin: 12px 0;
+    font-size: 18px;
+}
+
+.info a {
+    color: #ffd700;
+    text-decoration: none;
+}
+
+.info a:hover {
+    text-decoration: underline;
+}
+
+.about {
+    margin-top: 30px;
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+.about ul {
+    margin-top: 10px;
+    list-style-type: square;
+    padding-left: 20px;
+}
+
+@media (max-width: 650px) {
+    .profile {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .info {
+        text-align: center;
+    }
+}
+
+/* Login specific */
+.login-container {
+  background: rgba(0,0,0,0.65);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  width: 350px;
+  text-align: center;
+  margin: 80px auto;
+}
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  font-size: 16px;
+}
+input[type="text"], input[type="password"] {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
+button {
+  width: 100%;
+  padding: 12px;
+  background: #ffd700;
+  border: none;
+  color: #000;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+button:hover {
+  background: #e6c200;
+}
+.links {
+  margin-top: 15px;
+}
+.links a {
+  color: #ffd700;
+  text-decoration: none;
+  font-size: 14px;
+}
+.links a:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>تسجيل جديد</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="login-container">
+    <h1>إنشاء حساب جديد</h1>
+    {% if error %}
+      <p style="color: #ffb3b3;">{{ error }}</p>
+    {% endif %}
+    <form method="post">
+      <input name="username" placeholder="اسم المستخدم" required>
+      <input type="password" name="password" placeholder="كلمة المرور" required>
+      <button type="submit">تسجيل</button>
+    </form>
+    <div class="links">
+      <a href="{{ url_for('login') }}">الرجوع لتسجيل الدخول</a>
+    </div>
+  </div>
+</body>
+</html>
