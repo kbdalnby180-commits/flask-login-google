@@ -1,10 +1,14 @@
-import os, json, time, requests, secrets
+# -*- coding: utf-8 -*-
+import os, json, time, secrets, threading
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_session import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 from authlib.integrations.flask_client import OAuth
 from urllib.parse import urljoin
 
+# ---------------------------
+# إعداد التطبيق
+# ---------------------------
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'change_this_secret')
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -15,8 +19,11 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 USERS_FILE = 'users.json'
 ONLINE_FILE = 'online.json'
-ONLINE_TIMEOUT = 300
+ONLINE_TIMEOUT = 300  # ثواني
 
+# ---------------------------
+# إعداد Google OAuth
+# ---------------------------
 oauth = OAuth(app)
 oauth.register(
     name='google',
@@ -26,6 +33,9 @@ oauth.register(
     client_kwargs={'scope': 'openid email profile'}
 )
 
+# ---------------------------
+# دوال مساعدة
+# ---------------------------
 def load_json(path):
     if not os.path.exists(path):
         return {}
@@ -70,6 +80,9 @@ def before_request():
         mark_online(session['username'])
     clean_online()
 
+# ---------------------------
+# Routes الموقع
+# ---------------------------
 @app.route('/')
 def index():
     if 'username' in session:
@@ -120,7 +133,9 @@ def logout():
         session.pop('username', None)
     return redirect(url_for('login'))
 
-# Google OAuth start
+# ---------------------------
+# Google OAuth
+# ---------------------------
 @app.route('/auth/google')
 def google_login():
     redirect_uri = url_for('google_authorize', _external=True)
@@ -150,8 +165,10 @@ def google_authorize():
         'avatar': None
     }
 
+    # تحميل الصورة الشخصية
     if picture:
         try:
+            import requests
             resp = requests.get(picture, timeout=5)
             if resp.status_code == 200:
                 ext = 'jpg'
@@ -203,5 +220,9 @@ def api_online():
     online = load_json(ONLINE_FILE)
     return jsonify(list(online.keys()))
 
+# ---------------------------
+# تشغيل السيرفر
+# ---------------------------
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
